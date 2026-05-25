@@ -26,21 +26,21 @@
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
 
 /* NAV */
-.nav{position:fixed;left:0;top:0;bottom:0;width:var(--nav-w);background:#0f172a;z-index:100;display:flex;flex-direction:column;}
-.nav-logo{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;}
-.nav-icon{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav{position:fixed;left:0;top:0;bottom:0;width:var(--nav-w);background:#1a56a0;z-index:100;display:flex;flex-direction:column;}
+.nav-logo{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.12);display:flex;align-items:center;gap:10px;}
+.nav-icon{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,#60a5fa,#1d4ed8);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .nav-title{color:#fff;font-size:14px;font-weight:700;}
 .nav-sub{color:#64748b;font-size:11px;}
-.nav-item{display:flex;align-items:center;gap:9px;margin:2px 8px;padding:9px 10px;border-radius:7px;color:#94a3b8;font-size:13px;cursor:pointer;transition:.15s;}
-.nav-item:hover{background:rgba(255,255,255,.06);color:#e2e8f0;}
-.nav-item.on{background:rgba(59,130,246,.18);color:#93c5fd;}
+.nav-item{display:flex;align-items:center;gap:9px;margin:2px 8px;padding:9px 10px;border-radius:7px;color:#bfdbfe;font-size:13px;cursor:pointer;transition:.15s;}
+.nav-item:hover{background:rgba(255,255,255,.12);color:#ffffff;}
+.nav-item.on{background:rgba(255,255,255,.18);color:#ffffff;}
 .nav-item svg{flex-shrink:0;}
-.nav-sec{padding:14px 12px 6px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#475569;}
-.nav-bot{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.06);}
+.nav-sec{padding:14px 12px 6px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#93c5fd;}
+.nav-bot{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.12);}
 .nav-user{display:flex;align-items:center;gap:9px;padding:8px;}
-.nav-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
-.nav-un{font-size:12px;font-weight:500;color:#e2e8f0;}
-.nav-ur{font-size:11px;color:#64748b;}
+.nav-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#60a5fa,#818cf8);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.nav-un{font-size:12px;font-weight:500;color:#ffffff;}
+.nav-ur{font-size:11px;color:#93c5fd;}
 
 /* MAIN */
 .wrap{margin-left:var(--nav-w);min-height:100vh;display:flex;flex-direction:column;}
@@ -184,7 +184,7 @@ textarea.fi{resize:vertical;min-height:88px;}
 
 /* TOAST */
 .toast{position:fixed;bottom:22px;right:22px;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;display:flex;align-items:center;gap:7px;max-width:320px;box-shadow:var(--sh-lg);}
-.toast.ok{background:#0f172a;color:#fff;}
+.toast.ok{background:#1a56a0;color:#fff;}
 .toast.er{background:var(--red);color:#fff;}
 .toast.show{opacity:1;transform:translateY(0);}
 
@@ -325,10 +325,11 @@ function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 
 function rocToISO(v){
   if(!v) return '';
+  v = v.replace(/民國\s*/g,'').trim();
   const p = v.replace(/[\/\-\.]/g,'/').split('/');
   if(p.length!==3) return '';
   const roc=parseInt(p[0]);
-  if(isNaN(roc)||roc<1||roc>200) return '';
+  if(isNaN(roc)||roc<1||roc>150) return '';
   const y=roc+1911, m=p[1].padStart(2,'0'), d=p[2].padStart(2,'0');
   return y+'-'+m+'-'+d;
 }
@@ -510,7 +511,20 @@ function renderCards(sl, total){
 
 // ── Drawer ──
 function formHTML(c){
-  const bd = c&&c.birthday ? isoToROC(c.birthday).replace('民國 ','') : '';
+  // Convert stored ISO date to ROC for editing
+  let bd = '';
+  if(c&&c.birthday){
+    const p=c.birthday.split('-');
+    if(p.length===3){
+      let y=parseInt(p[0]);
+      // if year < 1912, it was stored as ROC year directly
+      if(y<1912){
+        bd=String(y).padStart(3,'0')+'/'+p[1]+'/'+p[2];
+      } else {
+        bd=String(y-1911).padStart(3,'0')+'/'+p[1]+'/'+p[2];
+      }
+    }
+  }
   return `
   <div class="dsec"><div class="dsec-t">基本資料</div>
     <div class="fgrid">
