@@ -184,6 +184,24 @@ textarea.fi{resize:vertical;min-height:88px;}
 
 /* TOAST */
 
+/* ── Charts ── */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.bar-label{font-size:12px;color:var(--muted);width:100px;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-track{flex:1;background:var(--surface2);border-radius:99px;height:22px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:99px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:#fff;transition:width .5s;}
+.bar-cnt{font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);width:30px;flex-shrink:0;}
+.phone-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;margin-bottom:10px;cursor:pointer;transition:.15s;}
+.phone-card:hover{box-shadow:var(--sh-lg);border-color:var(--border2);}
+.phone-not-found{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+
+/* ── Print ── */
+@media print{
+  .nav,.topbar,.topbar-r,.iab,.df,.exp-wrap,.btn-add,.toolbar,.stats,.bday-alert{display:none!important;}
+  .wrap{margin-left:0!important;}
+  .print-card{display:block!important;}
+}
+.print-card{display:none;}
+
 /* ── Birthday Alert ── */
 .bday-alert{background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--rl);padding:14px 18px;margin-bottom:18px;display:none;}
 .bday-alert.show{display:flex;align-items:flex-start;gap:12px;}
@@ -256,6 +274,15 @@ textarea.fi{resize:vertical;min-height:88px;}
     <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
     <span>往來客戶</span>
   </div>
+  <div class="nav-sec">工具</div>
+  <div class="nav-item" id="nav-report" onclick="showPanel('report')">
+    <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    <span>統計報表</span>
+  </div>
+  <div class="nav-item" id="nav-phone" onclick="showPanel('phone')">
+    <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+    <span>來電查詢</span>
+  </div>
   <div class="nav-bot">
     <div class="nav-user"><div class="nav-av">管</div><div><div class="nav-un">管理員</div><div class="nav-ur">系統管理員</div></div></div>
   </div>
@@ -298,7 +325,7 @@ textarea.fi{resize:vertical;min-height:88px;}
     </div>
   </div>
 
-  <div class="content">
+  <div class="content" id="panel-main">
     <div class="stats">
       <div class="stat"><div class="stat-ico" style="background:#eff4ff"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#1d4ed8" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div><div class="stat-val" id="s1" style="color:var(--blue)">—</div><div class="stat-lbl">客戶總數</div></div>
       <div class="stat"><div class="stat-ico" style="background:#ecfdf3"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#027a48" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div><div class="stat-val" id="s2" style="color:#027a48">—</div><div class="stat-lbl">公司數</div></div>
@@ -337,6 +364,44 @@ textarea.fi{resize:vertical;min-height:88px;}
     </div>
 
     <div id="list"></div>
+  </div>
+
+  <!-- Report Panel -->
+  <div id="panel-report" style="display:none;padding:22px 24px;flex:1;">
+    <div style="font-size:17px;font-weight:700;margin-bottom:4px;">統計報表</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">客戶數據分析</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <!-- Group chart -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;box-shadow:var(--sh);">
+        <div style="font-size:14px;font-weight:600;margin-bottom:16px;">各群組／分社客戶數</div>
+        <div id="chart-group"></div>
+      </div>
+      <!-- Monthly chart -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;box-shadow:var(--sh);">
+        <div style="font-size:14px;font-weight:600;margin-bottom:16px;">每月新增客戶趨勢</div>
+        <div id="chart-monthly"></div>
+      </div>
+    </div>
+    <!-- Tag stats -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;box-shadow:var(--sh);margin-top:20px;">
+      <div style="font-size:14px;font-weight:600;margin-bottom:16px;">標籤分佈</div>
+      <div id="chart-tags" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- Phone Search Panel -->
+  <div id="panel-phone" style="display:none;padding:22px 24px;flex:1;">
+    <div style="font-size:17px;font-weight:700;margin-bottom:4px;">來電查詢</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">輸入電話號碼快速查詢客戶身份</div>
+    <div style="max-width:480px;">
+      <div style="display:flex;gap:10px;margin-bottom:20px;">
+        <div class="srch" style="flex:1;">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          <input id="phone-q" type="tel" placeholder="輸入電話號碼..." oninput="phoneSearch()" style="width:100%;padding:10px 12px 10px 34px;border:1px solid var(--border);border-radius:var(--r);font-size:15px;font-family:'Noto Sans TC',sans-serif;outline:none;">
+        </div>
+      </div>
+      <div id="phone-result"></div>
+    </div>
   </div>
 </div>
 
@@ -692,7 +757,8 @@ function openView(id){
   });
   document.getElementById('tl-input').addEventListener('keydown',e=>{if(e.key==='Enter') document.getElementById('tl-add-btn').click();});
 
-  document.getElementById('df').innerHTML='<button class="btn btn-danger" id="btn-del2">刪除</button><button class="btn btn-outline" id="btn-close2">關閉</button><button class="btn btn-primary" id="btn-edit2">編輯資料</button>';
+  document.getElementById('df').innerHTML='<button class="btn btn-danger" id="btn-del2">刪除</button><button class="btn btn-outline" id="btn-close2">關閉</button><button class="btn btn-outline" id="btn-print2"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg> 列印</button><button class="btn btn-primary" id="btn-edit2">編輯資料</button>';
+  document.getElementById('btn-print2').onclick=()=>printCustomer(id);
   document.getElementById('btn-del2').onclick=()=>delCustomer(id);
   document.getElementById('btn-close2').onclick=closeDrawer;
   document.getElementById('btn-edit2').onclick=()=>{ closeDrawer(); setTimeout(()=>openEdit(id),250); };
@@ -892,6 +958,118 @@ document.getElementById('exp-menu').addEventListener('click', e=>e.stopPropagati
 document.getElementById('exp-csv').addEventListener('click', ()=>{ exportCSV(); document.getElementById('exp-menu').classList.remove('open'); });
 document.getElementById('exp-xlsx').addEventListener('click', ()=>{ exportXLSX(); document.getElementById('exp-menu').classList.remove('open'); });
 document.getElementById('exp-gdrive').addEventListener('click', ()=>{ uploadGDrive(); document.getElementById('exp-menu').classList.remove('open'); });
+
+// ── Panel switching ──
+function showPanel(p){
+  document.getElementById('panel-main').style.display = p==='main'?'block':'none';
+  document.getElementById('panel-report').style.display = p==='report'?'block':'none';
+  document.getElementById('panel-phone').style.display = p==='phone'?'flex':'none';
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('on'));
+  if(p==='report'){document.getElementById('nav-report').classList.add('on'); renderCharts();}
+  else if(p==='phone'){document.getElementById('nav-phone').classList.add('on'); setTimeout(()=>document.getElementById('phone-q').focus(),100);}
+  else document.querySelector('.nav-item').classList.add('on');
+}
+
+// ── Charts ──
+const COLORS=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16'];
+function renderCharts(){
+  // Group chart
+  const groups={};
+  all.forEach(c=>{ const g=c.group_name||'未填'; groups[g]=(groups[g]||0)+1; });
+  const gSorted=Object.entries(groups).sort((a,b)=>b[1]-a[1]);
+  const gMax=gSorted[0]?gSorted[0][1]:1;
+  document.getElementById('chart-group').innerHTML = gSorted.map(([g,n],i)=>
+    `<div class="bar-row"><div class="bar-label" title="${esc(g)}">${esc(g)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/gMax*100)}%;background:${COLORS[i%COLORS.length]}">${n}</div></div><div class="bar-cnt">${n}</div></div>`
+  ).join('') || '<div style="color:var(--muted);font-size:13px;">尚無資料</div>';
+
+  // Monthly chart - last 6 months
+  const months={};
+  for(let i=5;i>=0;i--){
+    const d=new Date(); d.setMonth(d.getMonth()-i);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    months[key]=0;
+  }
+  all.forEach(c=>{
+    if(!c.created_at) return;
+    const key=c.created_at.slice(0,7);
+    if(months[key]!==undefined) months[key]++;
+  });
+  const mEntries=Object.entries(months);
+  const mMax=Math.max(...mEntries.map(e=>e[1]),1);
+  document.getElementById('chart-monthly').innerHTML = mEntries.map(([m,n],i)=>{
+    const label=m.slice(5)+'月';
+    return `<div class="bar-row"><div class="bar-label">${label}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/mMax*100)}%;background:${COLORS[i%COLORS.length]}">${n>0?n:''}</div></div><div class="bar-cnt">${n}</div></div>`;
+  }).join('');
+
+  // Tags chart
+  const tags={};
+  all.forEach(c=>{ if(c.tags) c.tags.split(',').forEach(t=>{ const tt=t.trim(); if(tt) tags[tt]=(tags[tt]||0)+1; }); });
+  const tSorted=Object.entries(tags).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('chart-tags').innerHTML = tSorted.length
+    ? tSorted.map(([t,n])=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--blue)">${n}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">${esc(t)}</div></div>`).join('')
+    : '<div style="color:var(--muted);font-size:13px;">尚無標籤資料</div>';
+}
+
+// ── Phone Search ──
+function phoneSearch(){
+  const q = document.getElementById('phone-q').value.trim().replace(/[-\s]/g,'');
+  const res = document.getElementById('phone-result');
+  if(!q){ res.innerHTML=''; return; }
+  const found = all.filter(c=>
+    (c.phone||'').replace(/[-\s]/g,'').includes(q) ||
+    (c.phone1||'').replace(/[-\s]/g,'').includes(q)
+  );
+  if(!found.length){
+    res.innerHTML='<div class="phone-not-found">📵 查無此號碼的客戶</div>'; return;
+  }
+  res.innerHTML = found.map(c=>`
+    <div class="phone-card" onclick="showPanel('main');setTimeout(()=>openView(${c.id}),300)">
+      <div class="av ${av(c.name)}" style="width:42px;height:42px;font-size:14px;">${esc(ini(c.name))}</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:15px;">${esc(c.name)}</div>
+        <div style="font-size:12px;color:var(--muted);">${esc(c.company||'未填公司')} ${c.group_name?'・'+esc(c.group_name):''}</div>
+        <div style="font-size:12px;color:var(--blue);margin-top:3px;font-family:'DM Mono',monospace;">
+          ${c.phone?'📞 '+esc(c.phone):''}${c.phone1?' ／ 📞 '+esc(c.phone1):''}
+        </div>
+      </div>
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    </div>`).join('');
+}
+
+// ── Print Customer ──
+function printCustomer(id){
+  const c=all.find(x=>x.id===id); if(!c) return;
+  const bday=c.birthday?isoToROC(c.birthday):'—';
+  const tags=c.tags?c.tags.split(',').map(t=>'<span style="border:1px solid #ccc;border-radius:99px;padding:2px 8px;font-size:11px;margin-right:4px;">'+esc(t.trim())+'</span>').join(''):'—';
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>客戶資料 - ${esc(c.name)}</title>
+  <style>
+    body{font-family:'Noto Sans TC',sans-serif;padding:30px;color:#101828;font-size:14px;}
+    h1{font-size:22px;font-weight:700;margin-bottom:4px;}
+    .sub{color:#667085;font-size:13px;margin-bottom:24px;}
+    table{width:100%;border-collapse:collapse;}
+    td{padding:10px 12px;border-bottom:1px solid #e4e7ec;vertical-align:top;}
+    td:first-child{color:#667085;font-size:12px;width:90px;font-weight:500;}
+    .footer{margin-top:30px;font-size:11px;color:#98a2b3;text-align:right;}
+    @media print{.no-print{display:none;}}
+  </style></head><body>
+  <h1>${esc(c.name)}</h1>
+  <div class="sub">${esc(c.company||'')} ${c.group_name?'・'+esc(c.group_name):''}</div>
+  <table>
+    <tr><td>電話 1</td><td>${esc(c.phone||'—')}</td></tr>
+    <tr><td>電話 2</td><td>${esc(c.phone1||'—')}</td></tr>
+    <tr><td>Email</td><td>${esc(c.email||'—')}</td></tr>
+    <tr><td>生日</td><td>${bday}</td></tr>
+    <tr><td>地址</td><td>${esc(c.address||'—')}</td></tr>
+    <tr><td>標籤</td><td>${tags}</td></tr>
+    <tr><td>備註</td><td>${esc(c.notes||'—')}</td></tr>
+  </table>
+  <div class="footer">列印日期：${new Date().toLocaleDateString('zh-TW')}</div>
+  <script>window.onload=function(){window.print();}<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
 
 // ── Tag helpers ──
 function tagClass(t){
