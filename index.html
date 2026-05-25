@@ -326,6 +326,16 @@ function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 function rocToISO(v){
   if(!v) return '';
   v = v.replace(/民國\s*/g,'').trim();
+  // 支援純數字格式：YYYMMDD 或 YYMMDD
+  if(/^\d{6,7}$/.test(v)){
+    const yLen = v.length - 4;
+    const roc = parseInt(v.slice(0, yLen));
+    const m = v.slice(yLen, yLen+2);
+    const d = v.slice(yLen+2, yLen+4);
+    if(roc>=1 && roc<=150 && parseInt(m)>=1 && parseInt(m)<=12 && parseInt(d)>=1 && parseInt(d)<=31){
+      return (roc+1911)+'-'+m+'-'+d;
+    }
+  }
   const p = v.replace(/[\/\-\.]/g,'/').split('/');
   if(p.length!==3) return '';
   const roc=parseInt(p[0]);
@@ -542,7 +552,7 @@ function formHTML(c){
     <div class="fgrid">
       <div class="fg">
         <label class="fl">生日（民國年/月/日）</label>
-        <input class="fi" id="fi-bd" placeholder="例：080/05/22" maxlength="10" value="${esc(bd)}">
+        <input class="fi" id="fi-bd" placeholder="例：080/05/22 或 0800522" maxlength="10" value="${esc(bd)}">
         <div class="fhint ok" id="bd-hint">${bd?'✓ '+rocHint(bd):''}</div>
       </div>
       <div class="fg"><label class="fl">地址</label><input class="fi" id="fi-ad" placeholder="台北市..." value="${esc(c&&c.address?c.address:'')}"></div>
