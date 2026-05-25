@@ -327,14 +327,20 @@ function rocToISO(v){
   if(!v) return '';
   const p = v.replace(/[\/\-\.]/g,'/').split('/');
   if(p.length!==3) return '';
-  const y=parseInt(p[0])+1911, m=p[1].padStart(2,'0'), d=p[2].padStart(2,'0');
-  if(isNaN(y)||y<1912||y>2100) return '';
+  const roc=parseInt(p[0]);
+  if(isNaN(roc)||roc<1||roc>200) return '';
+  const y=roc+1911, m=p[1].padStart(2,'0'), d=p[2].padStart(2,'0');
   return y+'-'+m+'-'+d;
 }
 function isoToROC(s){
   if(!s) return '';
   const p=s.split('-'); if(p.length!==3) return s;
-  return '民國 '+(parseInt(p[0])-1911)+'/'+p[1]+'/'+p[2];
+  let y=parseInt(p[0]);
+  // 如果年份小於1912，表示資料庫存的是民國年，直接用
+  if(y<1912){
+    return '民國 '+String(y).padStart(3,'0')+'/'+p[1]+'/'+p[2];
+  }
+  return '民國 '+(y-1911)+'/'+p[1]+'/'+p[2];
 }
 function rocHint(v){
   const iso=rocToISO(v); if(!iso) return '';
