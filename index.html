@@ -365,7 +365,8 @@ textarea.fi{resize:vertical;min-height:88px;}
   </div>
   <div class="nav-bot">
     <div class="nav-user"><div class="nav-av">管</div><div><div class="nav-un" id="nav-uname">管理員</div><div class="nav-ur">系統管理員</div></div></div>
-    <button onclick="logout()" style="width:100%;margin-top:8px;padding:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#94a3b8;font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:.15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">登出</button>
+    <button onclick="showChangePass()" style="width:100%;margin-top:8px;padding:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#94a3b8;font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:.15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🔑 修改密碼</button>
+    <button onclick="logout()" style="width:100%;margin-top:6px;padding:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#94a3b8;font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:.15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">登出</button>
   </div>
 </nav>
 
@@ -1054,7 +1055,16 @@ document.getElementById('exp-xlsx').addEventListener('click', ()=>{ exportXLSX()
 document.getElementById('exp-gdrive').addEventListener('click', ()=>{ uploadGDrive(); document.getElementById('exp-menu').classList.remove('open'); });
 
 // ── Login / Security ──
-const USERS = {'admin':'crm2024'};  // 帳號:密碼，可自行修改
+// 帳號密碼存在 localStorage，可在系統內修改
+function getUsers(){
+  const stored = localStorage.getItem('crm_users');
+  if(stored) return JSON.parse(stored);
+  // 預設帳號密碼（首次使用）
+  const def = {'admin':'crm2024'};
+  localStorage.setItem('crm_users', JSON.stringify(def));
+  return def;
+}
+function saveUsers(u){ localStorage.setItem('crm_users', JSON.stringify(u)); }
 const SESSION_KEY = 'crm_session';
 
 function checkLogin(){
@@ -1074,6 +1084,7 @@ function doLogin(){
   const user = document.getElementById('login-user').value.trim();
   const pass = document.getElementById('login-pass').value;
   const err = document.getElementById('login-err');
+  const USERS=getUsers();
   if(USERS[user] && USERS[user]===pass){
     sessionStorage.setItem(SESSION_KEY, JSON.stringify({user}));
     document.getElementById('login-wrap').style.display='none';
@@ -1085,6 +1096,65 @@ function doLogin(){
     document.getElementById('login-pass').value='';
     document.getElementById('login-pass').focus();
   }
+}
+
+function showChangePass(){
+  document.getElementById('dh-t').textContent='修改密碼';
+  document.getElementById('dh-s').textContent='請輸入舊密碼及新密碼';
+  document.getElementById('dc').innerHTML=`
+    <div class="dsec">
+      <div class="dsec-t">密碼設定</div>
+      <div class="fg" style="margin-bottom:14px;">
+        <label class="fl">目前密碼</label>
+        <input class="fi" id="cp-old" type="password" placeholder="請輸入目前密碼">
+      </div>
+      <div class="fg" style="margin-bottom:14px;">
+        <label class="fl">新密碼</label>
+        <input class="fi" id="cp-new" type="password" placeholder="請輸入新密碼（至少6碼）">
+      </div>
+      <div class="fg">
+        <label class="fl">確認新密碼</label>
+        <input class="fi" id="cp-confirm" type="password" placeholder="再次輸入新密碼">
+      </div>
+      <div class="fhint er" id="cp-err" style="margin-top:8px;display:none;"></div>
+    </div>`;
+  document.getElementById('df').innerHTML=`
+    <button class="btn btn-outline" onclick="closeDrawer()">取消</button>
+    <button class="btn btn-primary" onclick="doChangePass()">確認修改</button>`;
+  // Enter key
+  setTimeout(()=>{
+    document.querySelectorAll('#cp-old,#cp-new,#cp-confirm').forEach(el=>{
+      el.addEventListener('keydown',e=>{ if(e.key==='Enter') doChangePass(); });
+    });
+    document.getElementById('cp-old').focus();
+  },300);
+  showDrawer();
+}
+
+function doChangePass(){
+  const s = sessionStorage.getItem(SESSION_KEY);
+  const user = s ? JSON.parse(s).user : '';
+  const oldP = document.getElementById('cp-old').value;
+  const newP = document.getElementById('cp-new').value;
+  const conf = document.getElementById('cp-confirm').value;
+  const err = document.getElementById('cp-err');
+  err.style.display='none';
+
+  const users = getUsers();
+  if(!users[user] || users[user]!==oldP){
+    err.textContent='目前密碼錯誤'; err.style.display='block'; return;
+  }
+  if(newP.length<6){
+    err.textContent='新密碼至少需要6個字元'; err.style.display='block'; return;
+  }
+  if(newP!==conf){
+    err.textContent='兩次輸入的新密碼不一致'; err.style.display='block'; return;
+  }
+  users[user]=newP;
+  saveUsers(users);
+  addLog('edit','（密碼已修改）');
+  closeDrawer();
+  toast('✓ 密碼已成功修改');
 }
 
 function logout(){
