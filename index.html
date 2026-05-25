@@ -270,7 +270,7 @@ textarea.fi{resize:vertical;min-height:88px;}
     <div><div class="nav-title">CRM 系統</div><div class="nav-sub">客戶關係管理</div></div>
   </div>
   <div class="nav-sec">主選單</div>
-  <div class="nav-item on">
+  <div class="nav-item on" id="nav-main" onclick="showPanel('main')">
     <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
     <span>往來客戶</span>
   </div>
@@ -965,9 +965,9 @@ function showPanel(p){
   document.getElementById('panel-report').style.display = p==='report'?'block':'none';
   document.getElementById('panel-phone').style.display = p==='phone'?'flex':'none';
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('on'));
-  if(p==='report'){document.getElementById('nav-report').classList.add('on'); renderCharts();}
-  else if(p==='phone'){document.getElementById('nav-phone').classList.add('on'); setTimeout(()=>document.getElementById('phone-q').focus(),100);}
-  else document.querySelector('.nav-item').classList.add('on');
+  if(p==='report'){ document.getElementById('nav-report').classList.add('on'); renderCharts(); }
+  else if(p==='phone'){ document.getElementById('nav-phone').classList.add('on'); setTimeout(()=>document.getElementById('phone-q').focus(),100); }
+  else { document.getElementById('nav-main').classList.add('on'); }
 }
 
 // ── Charts ──
