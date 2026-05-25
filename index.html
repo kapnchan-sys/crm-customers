@@ -676,7 +676,7 @@ function exportXLSX(){
     const ws = XLSX.utils.json_to_sheet(rows);
     ws['!cols']=[{wch:12},{wch:20},{wch:14},{wch:14},{wch:14},{wch:28},{wch:14},{wch:30},{wch:40},{wch:14}];
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,'往來客戶',ws);
+    XLSX.utils.book_append_sheet(wb,'Customers',ws);
     const fname = '客戶資料_'+today()+'.xlsx';
     XLSX.writeFile(wb, fname);
     toast('✓ Excel 已匯出');
@@ -715,7 +715,7 @@ async function doUpload(cid){
     const ws=XLSX.utils.json_to_sheet(getData());
     ws['!cols']=[{wch:12},{wch:20},{wch:15},{wch:28},{wch:14},{wch:30},{wch:40},{wch:14}];
     const wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,'往來客戶',ws);
+    XLSX.utils.book_append_sheet(wb,'Customers',ws);
     const buf=XLSX.write(wb,{bookType:'xlsx',type:'array'});
     const fname='客戶資料_'+today()+'.xlsx';
     const form=new FormData();
