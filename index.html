@@ -711,6 +711,15 @@ function bindDrawerEvents(){
     if(txt){h.textContent='✓ '+txt;h.className='fhint ok';}
     else{h.textContent=this.value.length>0?'格式：民國年/月/日':'';h.className='fhint';}
   });
+  // Enter key to save (except textarea)
+  document.getElementById('dc').querySelectorAll('input').forEach(input=>{
+    input.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){
+        e.preventDefault();
+        saveCustomer();
+      }
+    });
+  });
 }
 
 function showDrawer(){
