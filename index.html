@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>客戶關係管理系統</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -308,14 +309,9 @@ textarea.fi{resize:vertical;min-height:88px;}
 
 <script>
 // ── Config ──
-const URL_BASE = 'https://tltmsyexrjsahecnethw.supabase.co/rest/v1/customers';
-const KEY = 'sb_publishable_bNbXhoalrL7Dst5bTiuLYA_XrTpPrh3';
-const H = {
-  'Content-Type': 'application/json',
-  'apikey': KEY,
-  'Authorization': 'Bearer ' + KEY,
-  'Prefer': 'return=representation'
-};
+const SUPA_URL = 'https://tltmsyexrjsahecnethw.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRsdG1zeWV4cmpzYWhlY25ldGh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTg4NjcsImV4cCI6MjA5NDk5NDg2N30.2icB5FExKHvwWtSKczgjD6dWUKJxGwKinEScF2t48iY';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // ── State ──
 let all = [], filtered = [], view = 'table', mode = 'add', editId = null, pg = 1;
@@ -360,9 +356,9 @@ function toast(msg, type='ok'){
 async function fetchAll(){
   document.getElementById('list').innerHTML='<div class="loading"><div class="spin"></div>連接資料庫中...</div>';
   try{
-    const r = await fetch(URL_BASE+'?order=created_at.desc', {headers:H});
-    if(!r.ok) throw new Error('HTTP '+r.status+': '+await r.text());
-    all = await r.json();
+    const {data, error} = await supa.from('customers').select('*').order('created_at', {ascending:false});
+    if(error) throw new Error(error.message);
+    all = data;
     updateStats(); applyFilter();
   } catch(e){
     document.getElementById('list').innerHTML='<div class="empty"><div class="empty-ico"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#667085" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><h3>連線失敗</h3><p>'+esc(e.message)+'</p></div>';
@@ -384,10 +380,15 @@ async function saveCustomer(){
     notes:   document.getElementById('fi-nt').value.trim()||null,
   };
   try{
-    const url = mode==='add' ? URL_BASE : URL_BASE+'?id=eq.'+editId;
-    const method = mode==='add' ? 'POST' : 'PATCH';
-    const r = await fetch(url, {method, headers:H, body:JSON.stringify(body)});
-    if(!r.ok) throw new Error(await r.text());
+    let error;
+    if(mode==='add'){
+      const res = await supa.from('customers').insert(body);
+      error = res.error;
+    } else {
+      const res = await supa.from('customers').update(body).eq('id', editId);
+      error = res.error;
+    }
+    if(error) throw new Error(error.message);
     closeDrawer();
     toast(mode==='add'?'✓ 客戶已建立':'✓ 資料已更新');
     await fetchAll();
@@ -401,8 +402,8 @@ async function delCustomer(id){
   const c=all.find(x=>x.id===id);
   if(!confirm('確定要刪除「'+(c?c.name:'此客戶')+'」？此動作無法復原。')) return;
   try{
-    const r=await fetch(URL_BASE+'?id=eq.'+id,{method:'DELETE',headers:H});
-    if(!r.ok) throw new Error(await r.text());
+    const {error} = await supa.from('customers').delete().eq('id', id);
+    if(error) throw new Error(error.message);
     closeDrawer(); toast('已刪除');
     await fetchAll();
   } catch(e){ toast('刪除失敗：'+e.message,'er'); }
