@@ -476,13 +476,15 @@ function renderTable(sl, total){
   '<div class="tcard">'+
     '<div class="tcard-head"><div class="tcard-title">客戶列表</div><span class="tcard-cnt">共 '+filtered.length+' 筆</span></div>'+
     '<div style="overflow-x:auto"><table>'+
-    '<colgroup><col style="width:160px"><col style="width:130px"><col style="width:110px"><col style="width:110px"><col style="width:110px"><col style="width:160px"><col style="width:90px"><col style="width:90px"></colgroup>'+
+    '<colgroup><col style="width:160px"><col style="width:120px"><col style="width:110px"><col style="width:110px"><col style="width:110px"><col style="width:150px"><col style="width:90px"><col style="width:90px"></colgroup>'+
     '<thead><tr><th>客戶姓名</th><th>公司</th><th>來源／群組</th><th>電話 1</th><th>電話 2</th><th>Email</th><th>生日</th><th>操作</th></tr></thead>'+
     '<tbody>'+sl.map(c=>`
     <tr>
       <td><div class="td-av"><div class="av ${av(c.name)}">${esc(ini(c.name))}</div><div class="td-nm">${esc(c.name)}</div></div></td>
       <td>${c.company?'<span class="pill pill-b">'+esc(c.company)+'</span>':'<span style="color:var(--hint)">—</span>'}</td>
+      <td>${c.group_name?'<span class="pill" style="background:#f0fdf4;color:#166534;">'+esc(c.group_name)+'</span>':'<span style="color:var(--hint)">—</span>'}</td>
       <td style="color:var(--muted);font-family:\'DM Mono\',monospace;font-size:12px;">${esc(c.phone||'—')}</td>
+      <td style="color:var(--muted);font-family:\'DM Mono\',monospace;font-size:12px;">${esc(c.phone1||'—')}</td>
       <td style="color:var(--muted);font-size:12px;">${esc(c.email||'—')}</td>
       <td style="color:var(--muted);font-size:12px;">${c.birthday?isoToROC(c.birthday):'—'}</td>
       <td><div class="iab">
