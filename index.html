@@ -441,6 +441,12 @@ textarea.fi{resize:vertical;min-height:88px;}
         <option value="co">公司排序</option>
         <option value="bday">生日月份</option>
       </select>
+      <select class="sel" id="filter-group" onchange="applyFilter()">
+        <option value="">全部群組</option>
+      </select>
+      <select class="sel" id="filter-tag" onchange="applyFilter()">
+        <option value="">全部標籤</option>
+      </select>
       <div class="vtog">
         <button id="vt" class="on" title="表格">
           <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
@@ -587,7 +593,7 @@ async function fetchAll(){
     const {data, error} = await supa.from('customers').select('*').order('created_at', {ascending:false});
     if(error) throw new Error(error.message);
     all = data;
-    updateStats(); applyFilter(); showBdayAlert();
+    updateStats(); buildFilterOptions(); applyFilter(); showBdayAlert();
   } catch(e){
     document.getElementById('list').innerHTML='<div class="empty"><div class="empty-ico"><svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#667085" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><h3>連線失敗</h3><p>'+esc(e.message)+'</p></div>';
   }
@@ -654,15 +660,43 @@ function updateStats(){
 }
 
 // ── Filter + Sort ──
+function buildFilterOptions(){
+  // Build group dropdown from actual data
+  const groups = [...new Set(all.map(c=>c.group_name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh'));
+  const gSel = document.getElementById('filter-group');
+  const gVal = gSel.value;
+  gSel.innerHTML = '<option value="">全部群組</option>' + groups.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('');
+  if(gVal) gSel.value = gVal;
+
+  // Build tag dropdown from actual data
+  const tagSet = new Set();
+  all.forEach(c=>{ if(c.tags) c.tags.split(',').forEach(t=>{ if(t.trim()) tagSet.add(t.trim()); }); });
+  const tags = [...tagSet].sort((a,b)=>a.localeCompare(b,'zh'));
+  const tSel = document.getElementById('filter-tag');
+  const tVal = tSel.value;
+  tSel.innerHTML = '<option value="">全部標籤</option>' + tags.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  if(tVal) tSel.value = tVal;
+}
+
 function applyFilter(){
   const q=document.getElementById('q').value.toLowerCase();
   const s=document.getElementById('srt').value;
-  filtered=all.filter(c=>
-    (c.name||'').toLowerCase().includes(q)||
-    (c.company||'').toLowerCase().includes(q)||
-    (c.email||'').toLowerCase().includes(q)||
-    (c.phone||'').includes(q)
-  );
+  const fg=document.getElementById('filter-group').value;
+  const ft=document.getElementById('filter-tag').value;
+
+  filtered=all.filter(c=>{
+    // Text search
+    const matchQ = !q || (c.name||'').toLowerCase().includes(q)||
+      (c.company||'').toLowerCase().includes(q)||
+      (c.email||'').toLowerCase().includes(q)||
+      (c.phone||'').includes(q);
+    // Group filter
+    const matchG = !fg || (c.group_name||'')=== fg;
+    // Tag filter
+    const matchT = !ft || (c.tags||'').split(',').map(t=>t.trim()).includes(ft);
+    return matchQ && matchG && matchT;
+  });
+
   if(s==='name') filtered.sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh'));
   else if(s==='co') filtered.sort((a,b)=>(a.company||'').localeCompare(b.company||'','zh'));
   else if(s==='bday') filtered.sort((a,b)=>(a.birthday||'').localeCompare(b.birthday||''));
