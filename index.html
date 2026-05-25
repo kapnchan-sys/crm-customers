@@ -656,13 +656,34 @@ function exportCSV(){
 function exportXLSX(){
   if(!all.length){toast('尚無資料','er');return;}
   try{
-    const ws=XLSX.utils.json_to_sheet(getData());
-    ws['!cols']=[{wch:12},{wch:20},{wch:15},{wch:28},{wch:14},{wch:30},{wch:40},{wch:14}];
-    const wb=XLSX.utils.book_new();
+    // 安全轉換每筆資料
+    const rows = all.map(c=>{
+      const bday = (c.birthday && typeof c.birthday === 'string') ? isoToROC(c.birthday) : '';
+      const created = (c.created_at && typeof c.created_at === 'string') ? new Date(c.created_at).toLocaleDateString('zh-TW') : '';
+      return {
+        '姓名': String(c.name||''),
+        '公司名稱': String(c.company||''),
+        '來源／群組': String(c.group_name||''),
+        '電話1': String(c.phone||''),
+        '電話2': String(c.phone1||''),
+        'Email': String(c.email||''),
+        '生日': String(bday),
+        '地址': String(c.address||''),
+        '備註': String(c.notes||''),
+        '建立日期': String(created)
+      };
+    });
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols']=[{wch:12},{wch:20},{wch:14},{wch:14},{wch:14},{wch:28},{wch:14},{wch:30},{wch:40},{wch:14}];
+    const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,'往來客戶',ws);
-    XLSX.writeFile(wb,'客戶資料_'+today()+'.xlsx');
+    const fname = '客戶資料_'+today()+'.xlsx';
+    XLSX.writeFile(wb, fname);
     toast('✓ Excel 已匯出');
-  }catch(e){toast('匯出失敗：'+e.message,'er');}
+  }catch(e){
+    console.error('Excel匯出錯誤:', e);
+    toast('匯出失敗：'+e.message,'er');
+  }
 }
 function today(){return new Date().toLocaleDateString('zh-TW').replace(/\//g,'-');}
 function dl(blob, name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
