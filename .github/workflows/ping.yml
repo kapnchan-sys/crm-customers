@@ -1,0 +1,17 @@
+name: Ping Supabase
+
+on:
+  schedule:
+    - cron: '0 0 */5 * *'  # 每5天執行一次
+  workflow_dispatch:        # 允許手動執行
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRsdG1zeWV4cmpzYWhlY25ldGh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTg4NjcsImV4cCI6MjA5NDk5NDg2N30.2icB5FExKHvwWtSKczgjD6dWUKJxGwKinEScF2t48iY" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRsdG1zeWV4cmpzYWhlY25ldGh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTg4NjcsImV4cCI6MjA5NDk5NDg2N30.2icB5FExKHvwWtSKczgjD6dWUKJxGwKinEScF2t48iY" \
+            "https://tltmsyexrjsahecnethw.supabase.co/rest/v1/customers?limit=1"
